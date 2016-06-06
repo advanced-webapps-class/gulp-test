@@ -3,6 +3,7 @@ var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
 var watch = require('gulp-watch');
 var cleanCSS = require('gulp-clean-css');
+var connect = require('gulp-connect');
 
 //js 프로젝트 소스파일
 var jsfiles = ['src/js/config.js', 'src/js/pages/**/*.js', 'src/js/main.js'];
@@ -15,6 +16,7 @@ gulp.task('concat:js', function() {
 
 gulp.task('copy:html', function() {
   return gulp.src('src/index.html')
+    .pipe(connect.reload())
     .pipe(gulp.dest('dist/'));
 });
 
@@ -38,7 +40,16 @@ gulp.task('watch', function() {
   gulp.watch('src/**/*', ['build']);
 });
 
+gulp.task('connect', function() {
+  connect.server({
+    root: 'dist',
+    livereload: true,
+    port: 3001
+  });
+});
+
 
 gulp.task('copy', ['copy:html', 'copy:lib']);
 gulp.task('build', ['concat:js', 'copy', 'minify:css']);
-gulp.task('default', ['build', 'watch']);
+gulp.task('server', ['connect'])
+gulp.task('default', ['build', 'watch', 'server']);
